@@ -73,8 +73,8 @@ public class Control extends HttpServlet {
                         response.setContentType("application/json;charset=UTF-8");
                         Gson gson = JsonGson.getGson();
                         String data = "";
-                        if (request.getSession().getAttribute("usuario") == "daw") {
-                            data = "KPD" + RandomGenerator.randInt(1000, 10000) + "Z";
+                        if (request.getSession().getAttribute("usuario").equals("daw")) {
+                            data = "KPD" + RandomGenerator.randInt(1000, 10000) + "ZX" +  RandomGenerator.randInt(1000, 10000);
                         } else {
                             data = "ERROR";
                         }
