@@ -69,6 +69,20 @@ public class Control extends HttpServlet {
                     }
                 }
                 if (request.getParameter("ob").equals("user")) {
+                    if (request.getParameter("op").equals("secret")) {
+                        response.setContentType("application/json;charset=UTF-8");
+                        Gson gson = JsonGson.getGson();
+                        String data = "";
+                        if (request.getSession().getAttribute("usuario") == "daw") {
+                            data = "KPD" + RandomGenerator.randInt(1000, 10000) + "Z";
+                        } else {
+                            data = "ERROR";
+                        }
+                        out.print(gson.toJson(data));
+                        out.flush();
+                    }
+                }
+                if (request.getParameter("ob").equals("user")) {
                     if (request.getParameter("op").equals("logout")) {
                         response.setContentType("application/json;charset=UTF-8");
                         HttpSession oSession = request.getSession();
