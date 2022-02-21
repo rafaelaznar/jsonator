@@ -34,9 +34,10 @@ public class Control extends HttpServlet {
         try ( PrintWriter out = response.getWriter()) {
             String ob = request.getParameter("ob");
             String op = request.getParameter("op");
+            Gson gson = JsonGson.getGson();
             if (("".equalsIgnoreCase(ob) && "".equalsIgnoreCase(op)) || (ob == null && op == null)) {
                 response.setContentType("application/json;charset=UTF-8");
-                Gson gson = JsonGson.getGson();
+
                 String data = gson.toJson("Object or Operation Error");
                 out.print(data);
                 out.flush();
@@ -47,12 +48,12 @@ public class Control extends HttpServlet {
                         if (request.getParameter("username").equals("daw") && request.getParameter("password").equalsIgnoreCase("ausias")) {
                             HttpSession oSession = request.getSession();
                             oSession.setAttribute("usuario", request.getParameter("username"));
-                            Gson gson = JsonGson.getGson();
+
                             String data = gson.toJson("Welcome");
                             out.print(data);
                             out.flush();
                         } else {
-                            Gson gson = JsonGson.getGson();
+
                             String data = gson.toJson("Wrong password");
                             out.print(data);
                             out.flush();
@@ -62,7 +63,7 @@ public class Control extends HttpServlet {
                 if (request.getParameter("ob").equals("user")) {
                     if (request.getParameter("op").equals("check")) {
                         response.setContentType("application/json;charset=UTF-8");
-                        Gson gson = JsonGson.getGson();
+
                         String data = gson.toJson(request.getSession().getAttribute("usuario"));
                         out.print(data);
                         out.flush();
@@ -71,10 +72,10 @@ public class Control extends HttpServlet {
                 if (request.getParameter("ob").equals("user")) {
                     if (request.getParameter("op").equals("secret")) {
                         response.setContentType("application/json;charset=UTF-8");
-                        Gson gson = JsonGson.getGson();
+
                         String data = "";
                         if (request.getSession().getAttribute("usuario").equals("daw")) {
-                            data = "KPD" + RandomGenerator.randInt(1000, 10000) + "ZX" +  RandomGenerator.randInt(1000, 10000);
+                            data = "KPD" + RandomGenerator.randInt(1000, 10000) + "ZX" + RandomGenerator.randInt(1000, 10000);
                         } else {
                             data = "ERROR";
                         }
@@ -87,7 +88,7 @@ public class Control extends HttpServlet {
                         response.setContentType("application/json;charset=UTF-8");
                         HttpSession oSession = request.getSession();
                         oSession.invalidate();
-                        Gson gson = JsonGson.getGson();
+
                         String data = gson.toJson("No active session");
                         out.print(data);
                         out.flush();
@@ -96,40 +97,52 @@ public class Control extends HttpServlet {
                 if (request.getParameter("ob").equals("table")) {
                     if (request.getParameter("op").equals("get")) {
                         response.setContentType("application/json;charset=UTF-8");
-                        int ancho = RandomGenerator.randInt(3, 13);
-                        int alto = RandomGenerator.randInt(3, 20);
-                        Table t = JsonMaker.getTable(ancho, alto);
-                        Gson gson = JsonGson.getGson();
-                        String data = gson.toJson(t);
-                        out.print(data);
-                        out.flush();
+                        if (request.getSession().getAttribute("usuario").equals("daw")) {
+                            int ancho = RandomGenerator.randInt(3, 13);
+                            int alto = RandomGenerator.randInt(3, 20);
+                            out.print(gson.toJson(JsonMaker.getTable(ancho, alto)));
+                            out.flush();
+                        } else {
+                            out.print(gson.toJson("Auth ERROR"));
+                            out.flush();
+                        }
                     }
                 }
                 if (request.getParameter("ob").equals("list")) {
                     if (request.getParameter("op").equals("get")) {
                         int maxniveles = Integer.parseInt(request.getParameter("maxniveles"));
                         response.setContentType("application/json;charset=UTF-8");
-                        IOlUl t = null;
-                        int alto = RandomGenerator.randInt(3, 10);
-                        int profundo = RandomGenerator.randInt(2, maxniveles);
-                        if (RandomGenerator.randInt(0, 1) == 0) {
-                            t = JsonMaker.getOl(alto, profundo);
+                        if (request.getSession().getAttribute("usuario").equals("daw")) {
+                            IOlUl t = null;
+                            int alto = RandomGenerator.randInt(3, 10);
+                            int profundo = RandomGenerator.randInt(2, maxniveles);
+                            if (RandomGenerator.randInt(0, 1) == 0) {
+                                t = JsonMaker.getOl(alto, profundo);
+                            } else {
+                                t = JsonMaker.getUl(alto, profundo);
+                            }
+                            String data = gson.toJson(t);
+                            out.print(data);
+                            out.flush();
                         } else {
-                            t = JsonMaker.getUl(alto, profundo);
+                            out.print(gson.toJson("Auth ERROR"));
+                            out.flush();
                         }
-                        Gson gson = JsonGson.getGson();
-                        String data = gson.toJson(t);
-                        out.print(data);
-                        out.flush();
+
                     }
                 }
                 if (request.getParameter("ob").equals("form")) {
                     if (request.getParameter("op").equals("get")) {
                         int num = Integer.parseInt(request.getParameter("num"));
                         response.setContentType("application/json;charset=UTF-8");
-                        JsonFormMaker oJsonmaker = new JsonFormMaker();
-                        out.print(oJsonmaker.getForm(num));
-                        out.flush();
+                        if (request.getSession().getAttribute("usuario").equals("daw")) {
+                            JsonFormMaker oJsonmaker = new JsonFormMaker();
+                            out.print(oJsonmaker.getForm(num));
+                            out.flush();
+                        } else {
+                            out.print(gson.toJson("Auth ERROR"));
+                            out.flush();
+                        }
                     }
                 }
 
